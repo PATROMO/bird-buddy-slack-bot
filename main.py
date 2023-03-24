@@ -5,6 +5,7 @@ import pprint
 import time
 import requests
 import random
+import pytz
 
 from birdbuddy.feed import FeedNodeType
 from birdbuddy.feeder import FeederState
@@ -20,7 +21,7 @@ async def main():
     bb = BirdBuddy(os.getenv('BIRD_BUDDY_EMAIL'), os.getenv('BIRD_BUDDY_PASSWORD'))
     slack_client = WebClient(token=os.getenv('SLACK_TOKEN'))
     slogans = json.load(open('slogans.json'))
-    since: datetime = datetime.now()
+    since: datetime = datetime.now(tz=pytz.utc)
 
     while True:
         sleep_time = await get_sleep_time(bb)
@@ -28,9 +29,9 @@ async def main():
         time.sleep(sleep_time)
 
         print(">> Call BirdBuddy.feed() and filter...")
-        feeds = (await bb.feed(50)).filter([FeedNodeType.SpeciesSighting], since)
+        feeds = (await bb.feed(50)).filter([FeedNodeType.SpeciesSighting], newer_than=since)
         # pprint.pprint(feeds)
-        since = datetime.now()
+        since = datetime.now(tz=pytz.utc)
 
         print(">> Found items in feed:", len(feeds))
 

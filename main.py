@@ -19,6 +19,7 @@ async def main():
     print(">> Start")
 
     bb = BirdBuddy(os.getenv('BIRD_BUDDY_EMAIL'), os.getenv('BIRD_BUDDY_PASSWORD'))
+    bb.language_code = "de"
     slack_client = WebClient(token=os.getenv('SLACK_TOKEN'))
     slogans = json.load(open('slogans.json'))
     since: datetime = datetime.now(tz=pytz.utc)
